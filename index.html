@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Assessment Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for English and Amharic support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans Ethiopic', 'sans-serif'],
+                        ethiopic: ['Noto Sans Ethiopic', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e0ebff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-base sm:text-lg tracking-tight leading-none">EduTest Pro</h1>
+                    <span class="text-xs text-slate-500 font-medium">Interactive Knowledge Assessment</span>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Narrator Voice Status Indicator -->
+                <button id="narratorToggleBtn" onclick="toggleNarratorMute()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-slate-200 text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500" title="British Female Narrator Settings">
+                    <i id="narratorIcon" class="fa-solid fa-volume-high text-indigo-600"></i>
+                    <span class="hidden sm:inline" id="narratorLabel">Narrator: Active</span>
+                </button>
+
+                <!-- Teacher Dashboard Trigger -->
+                <button onclick="openTeacherDashboard()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium rounded-lg transition-colors border border-slate-200 flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-shield text-slate-500"></i>
+                    <span class="hidden md:inline">Teacher Portal</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+        <!-- SCREEN 1: Student Identification & Registration -->
+        <section id="screenWelcome" class="fade-in max-w-xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 sm:p-8 text-white relative">
+                <div class="relative z-10">
+                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-xs rounded-full font-semibold mb-3 tracking-wide text-blue-50">Online Portal / የመፈተኛ ፖርታል</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Student Assessment</h2>
+                    <p class="text-blue-100 text-sm mt-1">Please provide your valid details to begin the exam session.</p>
+                </div>
+                <div class="absolute -right-6 -bottom-6 opacity-15 text-white text-9xl pointer-events-none">
+                    <i class="fa-solid fa-file-signature"></i>
+                </div>
+            </div>
+
+            <form id="registrationForm" onsubmit="handleStartQuiz(event)" class="p-6 sm:p-8 space-y-5">
+                <div>
+                    <label for="studentName" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Full Name / ሙሉ ስም <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <input type="text" id="studentName" required placeholder="e.g. Abebe Bikila" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="studentId" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                        Student ID Number / የመታወቂያ ቁጥር <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-regular fa-id-card"></i>
+                        </div>
+                        <input type="text" id="studentId" required placeholder="e.g. ETS-2026/09" class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all outline-none">
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-3 text-amber-900 text-xs">
+                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5 text-base"></i>
+                    <div>
+                        <p class="font-semibold mb-0.5">Instructions / መመሪያ:</p>
+                        <ul class="list-disc list-inside space-y-1 text-amber-800">
+                            <li>Instant feedback is active. Once an option is chosen, it is <strong>locked permanently</strong>.</li>
+                            <li>Explanations are provided in English and Amharic for every question.</li>
+                            <li>Use the audio button to hear British English narration.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 group">
+                    <span>Start Exam / ፈተናውን ጀምር</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- SCREEN 2: Active Quiz Screen -->
+        <section id="screenQuiz" class="hidden fade-in space-y-6">
+            <!-- Progress Bar & User Badge -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm border border-blue-200">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <p id="badgeStudentName" class="font-semibold text-slate-800 text-sm leading-tight">Student Name</p>
+                        <p id="badgeStudentId" class="text-xs text-slate-500 font-mono">ID: -----</p>
+                    </div>
+                </div>
+
+                <!-- Step Counter and Progress -->
+                <div class="w-full sm:w-1/2 flex flex-col gap-1.5">
+                    <div class="flex justify-between items-center text-xs text-slate-600 font-medium">
+                        <span>Question <span id="currentQNum">1</span> of <span id="totalQNum">0</span></span>
+                        <span id="progressPercent" class="font-bold text-blue-600">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                        <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Question Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200/90 overflow-hidden">
+                <!-- Question Banner Header -->
+                <div class="bg-slate-900 text-white p-5 sm:p-6 flex items-start justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span id="qTypeBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                                Multiple Choice
+                            </span>
+                            <span id="statusAnswerBadge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-700 text-slate-300">
+                                Unanswered
+                            </span>
+                        </div>
+                        <h3 id="questionTextEn" class="text-base sm:text-lg font-semibold leading-snug text-white pt-1">
+                            Question English Text
+                        </h3>
+                        <p id="questionTextAm" class="text-sm font-medium text-slate-300 font-ethiopic leading-relaxed">
+                            የጥያቄው የአማርኛ ትርጉም
+                        </p>
+                    </div>
+
+                    <!-- Voice Narrator Audio Play Button -->
+                    <button id="readQuestionAudioBtn" onclick="narrateCurrentQuestion()" class="flex-shrink-0 w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-700 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" title="Listen to question narration in British Accent">
+                        <i id="readAudioIcon" class="fa-solid fa-volume-high text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Question Answer Interaction Container -->
+                <div class="p-6 sm:p-8 space-y-6">
+                    <!-- Dynamic Answer Options Container -->
+                    <div id="optionsContainer" class="space-y-3">
+                        <!-- Options injected dynamically by JS -->
+                    </div>
+
+                    <!-- Instant Feedback Message Box (Initially Hidden) -->
+                    <div id="feedbackContainer" class="hidden rounded-xl p-4 border transition-all duration-300">
+                        <div class="flex items-start gap-3">
+                            <div id="feedbackIconWrapper" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-white">
+                                <!-- Dynamic Icon -->
+                            </div>
+                            <div class="space-y-1 flex-grow">
+                                <h4 id="feedbackTitle" class="font-bold text-sm">Feedback Title</h4>
+                                <p id="feedbackText" class="text-xs sm:text-sm">Feedback body details.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bilingual Detailed Explanation Section (Shown after answer submission/locking) -->
+                    <div id="explanationBox" class="hidden bg-slate-50 rounded-xl p-5 border border-slate-200/80 space-y-4 fade-in">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                Detailed Explanation / ዝርዝር ማብራሪያ
+                            </span>
+                            <button onclick="narrateExplanation()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-play text-[10px]"></i> Listen / አዳምጥ
+                            </button>
+                        </div>
+
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="space-y-1">
+                                <span class="text-[11px] font-bold text-blue-700 uppercase tracking-wide">English:</span>
+                                <p id="explanationEn" class="text-slate-700 leading-relaxed font-normal">
+                                    English explanation content...
+                                </p>
+                            </div>
+                            <div class="space-y-1 border-t border-slate-200/60 pt-2.5">
+                                <span class="text-[11px] font-bold text-blue-700 uppercase tracking-wide">አማርኛ:</span>
+                                <p id="explanationAm" class="text-slate-700 leading-relaxed font-ethiopic font-normal">
+                                    የአማርኛ ማብራሪያ ይዘት...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls Footer -->
+                <div class="bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between gap-3">
+                    <button id="btnBack" onclick="navigateQuestion(-1)" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs sm:text-sm font-semibold hover:bg-white hover:border-slate-400 transition-colors flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Back / ወደ ኋላ</span>
+                    </button>
+
+                    <!-- Question Jump/Skip Indicators Menu Toggle for Quick Jump -->
+                    <div class="relative">
+                        <button onclick="toggleJumpGrid()" class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-600 font-medium hover:bg-slate-100 flex items-center gap-1.5">
+                            <i class="fa-solid fa-thumbtack text-slate-400"></i>
+                            <span class="hidden sm:inline">Jump List</span>
+                            <i class="fa-solid fa-caret-down text-slate-400"></i>
+                        </button>
+                        <!-- Jump Popup Grid -->
+                        <div id="jumpGridModal" class="hidden absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 p-3 z-20 space-y-2">
+                            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">Jump to Question</p>
+                            <div id="jumpGridButtons" class="grid grid-cols-5 gap-1.5 max-h-40 overflow-y-auto p-1 custom-scrollbar">
+                                <!-- Dynamic Question Jump Badges -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="btnSkip" onclick="navigateQuestion(1)" class="px-4 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs sm:text-sm font-semibold transition-colors flex items-center gap-1.5">
+                            <span>Skip / ቀጣይ</span>
+                            <i class="fa-solid fa-forward-step text-slate-500"></i>
+                        </button>
+
+                        <button id="btnNext" onclick="navigateQuestion(1)" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-blue-500/20 transition-all flex items-center gap-2">
+                            <span>Next</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+
+                        <button id="btnSubmitQuiz" onclick="confirmSubmitQuiz()" class="hidden px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-emerald-600/20 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>Submit Exam</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: Exam Results & Summary Dashboard -->
+        <section id="screenResults" class="hidden fade-in space-y-6">
+            <!-- Summary Score Header -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden text-center p-6 sm:p-10">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 border-4 border-blue-500 text-blue-600 text-3xl mb-4 shadow-inner">
+                    <i id="scoreResultIcon" class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Assessment Completed!</h2>
+                <p class="text-sm text-slate-500 mt-1">የፈተና ውጤት ማጠቃለያ እና ዝርዝር መረጃ</p>
+
+                <!-- Student Detail Pills -->
+                <div class="mt-4 inline-flex flex-wrap items-center justify-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-700">
+                    <span><i class="fa-regular fa-user text-blue-500 mr-1"></i> <span id="resStudentName">---</span></span>
+                    <span class="text-slate-300">|</span>
+                    <span><i class="fa-regular fa-id-card text-blue-500 mr-1"></i> <span id="resStudentId">---</span></span>
+                    <span class="text-slate-300">|</span>
+                    <span><i class="fa-regular fa-calendar text-blue-500 mr-1"></i> <span id="resDate">---</span></span>
+                </div>
+
+                <!-- Primary Metric Score Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 max-w-2xl mx-auto">
+                    <div class="bg-blue-50/70 rounded-xl p-4 border border-blue-100 text-center">
+                        <span class="text-xs text-blue-600 font-bold uppercase tracking-wider block">Score</span>
+                        <span id="metricScore" class="text-2xl sm:text-3xl font-extrabold text-blue-900">0 / 0</span>
+                    </div>
+                    <div class="bg-emerald-50/70 rounded-xl p-4 border border-emerald-100 text-center">
+                        <span class="text-xs text-emerald-600 font-bold uppercase tracking-wider block">Percentage</span>
+                        <span id="metricPercent" class="text-2xl sm:text-3xl font-extrabold text-emerald-900">0%</span>
+                    </div>
+                    <div class="bg-indigo-50/70 rounded-xl p-4 border border-indigo-100 text-center">
+                        <span class="text-xs text-indigo-600 font-bold uppercase tracking-wider block">Correct</span>
+                        <span id="metricCorrect" class="text-2xl sm:text-3xl font-extrabold text-indigo-900">0</span>
+                    </div>
+                    <div class="bg-amber-50/70 rounded-xl p-4 border border-amber-100 text-center">
+                        <span class="text-xs text-amber-600 font-bold uppercase tracking-wider block">Status</span>
+                        <span id="metricStatus" class="text-xl sm:text-2xl font-extrabold text-amber-800">PASSED</span>
+                    </div>
+                </div>
+
+                <!-- Action Button Cluster -->
+                <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+                    <!-- Direct Email Submission Button -->
+                    <a id="emailScoreBtn" href="#" target="_blank" class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-blue-500/20 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Email Result to Teacher (mesayferedegn2@gmail.com)</span>
+                    </a>
+
+                    <button onclick="retakeQuiz()" class="px-4 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs sm:text-sm border border-slate-300 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Retake Exam</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Question Breakdown -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 space-y-4">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-blue-600"></i>
+                    <span>Detailed Question Review / የጥያቄዎች ግምገማ</span>
+                </h3>
+
+                <div id="reviewListContainer" class="space-y-4 divide-y divide-slate-100">
+                    <!-- Dynamic review items generated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: Teacher Dashboard Modal / View -->
+        <div id="teacherModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden fade-in">
+                <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <i class="fa-solid fa-user-shield text-blue-400 text-lg"></i>
+                        <div>
+                            <h3 class="font-bold text-base">Teacher Administration Portal</h3>
+                            <p class="text-xs text-slate-400">Stored Submissions & Student Analytics</p>
+                        </div>
+                    </div>
+                    <button onclick="closeTeacherDashboard()" class="text-slate-400 hover:text-white text-lg w-8 h-8 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto flex-grow space-y-4 custom-scrollbar">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <p class="text-xs text-slate-500">Record of all completed exam sessions saved on this device.</p>
+                        <button onclick="clearTeacherRecords()" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-can"></i>
+                            <span>Clear Records</span>
+                        </button>
+                    </div>
+
+                    <!-- Submissions Table -->
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left text-xs text-slate-600">
+                            <thead class="bg-slate-100 text-slate-700 uppercase font-bold text-[10px] tracking-wider border-b border-slate-200">
+                                <tr>
+                                    <th class="px-4 py-3">Student Name</th>
+                                    <th class="px-4 py-3">ID Number</th>
+                                    <th class="px-4 py-3">Date/Time</th>
+                                    <th class="px-4 py-3">Score</th>
+                                    <th class="px-4 py-3">Percentage</th>
+                                    <th class="px-4 py-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherTableBody" class="divide-y divide-slate-100">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 px-6 py-3 border-t border-slate-200 flex justify-end">
+                    <button onclick="closeTeacherDashboard()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold rounded-lg">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-6xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>© 2026 Interactive Assessment System. All Rights Reserved.</p>
+            <p class="text-slate-400">Teacher Contact Email: <a href="mailto:mesayferedegn2@gmail.com" class="text-blue-600 hover:underline">mesayferedegn2@gmail.com</a></p>
+        </div>
+    </footer>
+
+    <script>
+        /**
+         * Comprehensive Question Bank
+         * Contains Multiple Choice, True/False, and Interactive Matching questions.
+         * Elaborated explanations in both English and Amharic provided for every question.
+         */
+        const quizQuestions = [
+            {
+                id: 1,
+                type: 'mcq',
+                questionEn: "What is the primary function of Ribosomes within a biological cell?",
+                questionAm: "በሕይወት ያለው ሕዋስ (Cell) ውስጥ የሪቦሶምስ (Ribosomes) ዋና ተግባር ምንድን ነው?",
+                options: [
+                    "Energy production through cellular respiration",
+                    "Protein synthesis by translating messenger RNA",
+                    "Lipid synthesis and detoxification",
+                    "Cellular waste breakdown and recycling"
+                ],
+                correctAnswer: 1,
+                explanationEn: "Ribosomes are essential cellular organelles responsible for protein synthesis. They read the genetic instructions carried by messenger RNA (mRNA) and assemble amino acids into polypeptide chains.",
+                explanationAm: "ሪቦሶሞች በሕዋስ ውስጥ የፕሮቲን ምርትን የሚያከናውኑ አስፈላጊ የአካል ክፍሎች ናቸው። ከሜሴንጀር አር ኤን ኤ (mRNA) የሚመጣውን የዘነመልእክት መመሪያ በመተርጎም አሚኖ አሲዶችን በማቀናጀት ፕሮቲን ይፈጥራሉ።"
+            },
+            {
+                id: 2,
+                type: 'tf',
+                questionEn: "True or False: Sound waves travel faster in water than through the air at sea level.",
+                questionAm: "እውነት ወይስ ሐሰት፡ የድምፅ ሞገድ ከነፋስ (አየር) ይልቅ በውሃ ውስጥ በፍጥነት ይጓዛል።",
+                options: ["True / እውነት", "False / ሐሰት"],
+                correctAnswer: 0,
+                explanationEn: "True. Sound requires a medium to travel. Because liquid water has much greater density and elastic modulus than air, sound waves travel approximately 4.3 times faster in water (~1,480 m/s) than in air (~343 m/s).",
+                explanationAm: "እውነት። የድምፅ ሞገድ ለመጓዝ ቁስ አካል ያስፈልገዋል። ውሃ ከአየር የበለጠ ጥቅጥቅ ያለ እና የመለጠጥ ባህሪ ያለው በመሆኑ፣ ድምፅ በውሃ ውስጥ ከአየር ይልቅ በአራት እጥፍ ያህል ፈጣን በሆነ ፍጥነት ይጓዛል።"
+            },
+            {
+                id: 3,
+                type: 'matching',
+                questionEn: "Match the Ethiopian historical landmarks with their corresponding geographical regions:",
+                questionAm: "የሚከተሉትን የኢትዮጵያ ታሪካዊ ቅርሶች ከሚገኙበት ክልል/ቦታ ጋር አዛምድ፡",
+                pairs: [
+                    { itemEn: "Rock-Hewn Churches", itemAm: "ውቅር አብያተ ክርስቲያናት", matchesEn: ["Lalibela", "Gonder", "Axum", "Harar"], correctMatchIndex: 0 },
+                    { itemEn: "Fasil Ghebbi Castle", itemAm: "ፋሲል ግቢ ግንብ", matchesEn: ["Lalibela", "Gonder", "Axum", "Harar"], correctMatchIndex: 1 },
+                    { itemEn: "Ancient Obelisks / Stelae", itemAm: "የአክሱም ሐውልት", matchesEn: ["Lalibela", "Gonder", "Axum", "Harar"], correctMatchIndex: 2 },
+                    { itemEn: "Jugol Walled City", itemAm: "የጁጎል ግንብ", matchesEn: ["Lalibela", "Gonder", "Axum", "Harar"], correctMatchIndex: 3 }
+                ],
+                explanationEn: "Lalibela is famed for its 11 rock-cut churches built in the 12th-13th centuries. Fasil Ghebbi served as the fortress of Ethiopian emperors in Gondar. Axum is renowned for its ancient monolithic stelae. Jugol is the historic fortified wall surrounding Harar.",
+                explanationAm: "ላሊበላ በ12ኛው እና 13ኛው ክፍለ ዘመን በተወቀሩ አብያተ ክርስቲያናቱ ይታወቃል። ፋሲል ግቢ በጎንደር የነገሥታት መኖሪያ ምሽግ ነበር። አክሱም በድንቅ ሐውልቶቹ የታወቀ ሲሆን፣ ጁጎል ደግሞ የሐረር ታሪካዊ ከበበ ግንብ ነው።"
+            },
+            {
+                id: 4,
+                type: 'mcq',
+                questionEn: "Which computer hardware component performs mathematical calculation and logic operations?",
+                questionAm: "በኮምፒዩተር ውስጥ የሂሳብ ስሌቶችን እና አመክንዮአዊ (Logic) ስራዎችን የሚያከናውነው ክፍል የትኛው ነው?",
+                options: [
+                    "Random Access Memory (RAM)",
+                    "Arithmetic Logic Unit (ALU)",
+                    "Graphics Processing Unit (GPU)",
+                    "Hard Disk Drive (HDD)"
+                ],
+                correctAnswer: 1,
+                explanationEn: "The Arithmetic Logic Unit (ALU) is a fundamental digital circuit inside the Central Processing Unit (CPU) designed to perform arithmetic (add, subtract) and logic operations (AND, OR, NOT).",
+                explanationAm: "ኤ.ኤል.ዩ (ALU) በሴንትራል ፕሮሰሲንግ ዩኒት (CPU) ውስጥ የሚገኝ የዲጂታል ሰርኪዩር ክፍል ሲሆን፣ የሂሳብ ስሌቶችን እና አመክንዮአዊ ውሳኔዎችን የማስላት ዋና ኃላፊነት አለበት።"
+            },
+            {
+                id: 5,
+                type: 'tf',
+                questionEn: "True or False: Light intensity decreases proportional to the square of distance from the source.",
+                questionAm: "እውነት ወይስ ሐሰት፡ የብርሃን ጥንካሬ ከምንጩ ባለው ርቀት ስኩዌር (Square) እጥፍ መሰረት እየቀነሰ ይሄዳል።",
+                options: ["True / እውነት", "False / ሐሰት"],
+                correctAnswer: 0,
+                explanationEn: "True. This is known as the Inverse-Square Law. The intensity of light (or radiation) is inversely proportional to the square of the distance from the source (I ∝ 1/d²).",
+                explanationAm: "እውነት። ይህ ህግ (Inverse-Square Law) ይባላል። ከብርሃን ምንጭ የሚወጣው የብርሃን መጠን ርቀቱ እየጨመረ ሲሄድ በርቀቱ ስኩዌር መጠን እየቀነሰ ይሄዳል።"
+            },
+            {
+                id: 6,
+                type: 'matching',
+                questionEn: "Match the chemical elements with their corresponding chemical symbols:",
+                questionAm: "የሚከተሉትን ኬሚካላዊ ኤሌመንቶች ከተወካይ ምልክታቸው (Symbol) ጋር አዛምድ፡",
+                pairs: [
+                    { itemEn: "Gold (ወርቅ)", matchesEn: ["Au", "Fe", "Na", "K"], correctMatchIndex: 0 },
+                    { itemEn: "Iron (ብረት)", matchesEn: ["Au", "Fe", "Na", "K"], correctMatchIndex: 1 },
+                    { itemEn: "Sodium (ሶዲየም)", matchesEn: ["Au", "Fe", "Na", "K"], correctMatchIndex: 2 },
+                    { itemEn: "Potassium (ፖታሺየም)", matchesEn: ["Au", "Fe", "Na", "K"], correctMatchIndex: 3 }
+                ],
+                explanationEn: "Gold is Au (from Latin 'Aurum'), Iron is Fe (from 'Ferrum'), Sodium is Na (from 'Natrium'), and Potassium is K (from 'Kalium').",
+                explanationAm: "የወርቅ ምልክት Au (ከላቲን አውረም)፣ የብረት Fe (ፌረም)፣ የሶዲየም Na (ናትሪየም)፣ እና የፖታሺየም K (ካሊየም) በመባል ይታወቃሉ።"
+            }
+        ];
+
+        // Global Application State
+        let currentQuestionIdx = 0;
+        let studentData = { fullName: '', studentId: '', timestamp: '' };
+        let userAnswers = {}; // Stores questionId -> { selectedOption, isCorrect, matchingSelections: {} }
+        let isNarratorMuted = false;
+        let britishFemaleVoice = null;
+
+        // Initialize Speech Synthesis & Voice Selection
+        function initVoiceNarrator() {
+            if ('speechSynthesis' in window) {
+                const updateVoices = () => {
+                    const voices = window.speechSynthesis.getVoices();
+                    // Search specifically for British Female voices (e.g. Google UK English Female, Victoria, Hazel, Sonia, en-GB)
+                    britishFemaleVoice = voices.find(v => (v.lang === 'en-GB' || v.lang === 'en_GB') && (v.name.includes('Female') || v.name.includes('Hazel') || v.name.includes('Victoria') || v.name.includes('Google UK English Female') || v.name.includes('Sonia')));
+                    
+                    if (!britishFemaleVoice) {
+                        britishFemaleVoice = voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB');
+                    }
+                    if (!britishFemaleVoice) {
+                        britishFemaleVoice = voices.find(v => v.lang.startsWith('en'));
+                    }
+                };
+                updateVoices();
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = updateVoices;
+                }
+            }
+        }
+
+        // Narrate text using speech synthesis
+        function speakText(text) {
+            if (isNarratorMuted || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel(); // Stop ongoing speech
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (britishFemaleVoice) {
+                utterance.voice = britishFemaleVoice;
+            }
+            utterance.pitch = 1.0;
+            utterance.rate = 0.95; // Clear natural tempo
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleNarratorMute() {
+            isNarratorMuted = !isNarratorMuted;
+            const icon = document.getElementById('narratorIcon');
+            const label = document.getElementById('narratorLabel');
+            if (isNarratorMuted) {
+                icon.className = "fa-solid fa-volume-xmark text-slate-400";
+                label.innerText = "Narrator: Muted";
+                window.speechSynthesis.cancel();
+            } else {
+                icon.className = "fa-solid fa-volume-high text-indigo-600";
+                label.innerText = "Narrator: Active";
+                speakText("Narrator activated.");
+            }
+        }
+
+        // Start Quiz Handler
+        function handleStartQuiz(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('studentName').value.trim();
+            const idInput = document.getElementById('studentId').value.trim();
+
+            if (!nameInput || !idInput) return;
+
+            studentData.fullName = nameInput;
+            studentData.studentId = idInput;
+            studentData.timestamp = new Date().toLocaleString();
+
+            document.getElementById('badgeStudentName').innerText = studentData.fullName;
+            document.getElementById('badgeStudentId').innerText = `ID: ${studentData.studentId}`;
+
+            // Switch Screen
+            document.getElementById('screenWelcome').classList.add('hidden');
+            document.getElementById('screenQuiz').classList.remove('hidden');
+
+            // Render First Question
+            currentQuestionIdx = 0;
+            renderQuestion();
+        }
+
+        // Render Current Question Card
+        function renderQuestion() {
+            const q = quizQuestions[currentQuestionIdx];
+            document.getElementById('totalQNum').innerText = quizQuestions.length;
+            document.getElementById('currentQNum').innerText = currentQuestionIdx + 1;
+
+            // Update Progress Bar
+            const percent = Math.round(((currentQuestionIdx + 1) / quizQuestions.length) * 100);
+            document.getElementById('progressBar').style.width = `${percent}%`;
+            document.getElementById('progressPercent').innerText = `${percent}%`;
+
+            // Question Text
+            document.getElementById('questionTextEn').innerText = `${currentQuestionIdx + 1}. ${q.questionEn}`;
+            document.getElementById('questionTextAm').innerText = q.questionAm;
+
+            // Question Type Badge
+            const typeBadge = document.getElementById('qTypeBadge');
+            if (q.type === 'mcq') typeBadge.innerText = 'Multiple Choice';
+            else if (q.type === 'tf') typeBadge.innerText = 'True / False';
+            else if (q.type === 'matching') typeBadge.innerText = 'Matching Items';
+
+            // Check if already answered
+            const existingAnswer = userAnswers[q.id];
+            const isAnswered = existingAnswer !== undefined;
+
+            const statusBadge = document.getElementById('statusAnswerBadge');
+            if (isAnswered) {
+                statusBadge.innerText = "Answer Locked";
+                statusBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-400/30";
+            } else {
+                statusBadge.innerText = "Unanswered";
+                statusBadge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-slate-700 text-slate-300";
+            }
+
+            // Render Options View based on Question Type
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            if (q.type === 'mcq' || q.type === 'tf') {
+                renderMultipleChoiceOptions(q, container, existingAnswer);
+            } else if (q.type === 'matching') {
+                renderMatchingOptions(q, container, existingAnswer);
+            }
+
+            // Render Feedback and Explanations
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const explanationBox = document.getElementById('explanationBox');
+
+            if (isAnswered) {
+                showFeedbackUI(q, existingAnswer);
+                document.getElementById('explanationEn').innerText = q.explanationEn;
+                document.getElementById('explanationAm').innerText = q.explanationAm;
+                explanationBox.classList.remove('hidden');
+            } else {
+                feedbackContainer.classList.add('hidden');
+                explanationBox.classList.add('hidden');
+            }
+
+            // Navigation Buttons State
+            document.getElementById('btnBack').disabled = currentQuestionIdx === 0;
+
+            if (currentQuestionIdx === quizQuestions.length - 1) {
+                document.getElementById('btnNext').classList.add('hidden');
+                document.getElementById('btnSkip').classList.add('hidden');
+                document.getElementById('btnSubmitQuiz').classList.remove('hidden');
+            } else {
+                document.getElementById('btnNext').classList.remove('hidden');
+                document.getElementById('btnSkip').classList.remove('hidden');
+                document.getElementById('btnSubmitQuiz').classList.add('hidden');
+            }
+
+            // Automatically read question aloud if voice active
+            narrateCurrentQuestion();
+        }
+
+        // Render Multiple Choice / True False Options
+        function renderMultipleChoiceOptions(q, container, existingAnswer) {
+            const letters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, idx) => {
+                const isSelected = existingAnswer && existingAnswer.selectedOption === idx;
+                const isCorrect = q.correctAnswer === idx;
+                const isLocked = existingAnswer !== undefined;
+
+                let btnStyles = "w-full p-4 rounded-xl border text-left flex items-start justify-between gap-3 transition-all duration-200 text-sm font-medium ";
+
+                if (!isLocked) {
+                    btnStyles += "bg-white border-slate-200 text-slate-800 hover:border-blue-500 hover:bg-blue-50/50 shadow-sm";
+                } else {
+                    if (isCorrect) {
+                        btnStyles += "bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/30";
+                    } else if (isSelected && !isCorrect) {
+                        btnStyles += "bg-rose-50 border-rose-500 text-rose-900 ring-2 ring-rose-500/30";
+                    } else {
+                        btnStyles += "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+                    }
+                }
+
+                const optBtn = document.createElement('button');
+                optBtn.type = 'button';
+                optBtn.className = btnStyles;
+                optBtn.disabled = isLocked;
+
+                optBtn.onclick = () => handleSelectOption(idx);
+
+                let badgeColor = isLocked && isCorrect ? "bg-emerald-600 text-white" : (isSelected ? "bg-rose-600 text-white" : "bg-slate-100 text-slate-600");
+
+                optBtn.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-lg ${badgeColor} text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                            ${letters[idx] || (idx + 1)}
+                        </span>
+                        <span class="leading-relaxed">${optText}</span>
+                    </div>
+                    ${isLocked && isCorrect ? '<i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5"></i>' : ''}
+                    ${isLocked && isSelected && !isCorrect ? '<i class="fa-solid fa-circle-xmark text-rose-600 text-lg mt-0.5"></i>' : ''}
+                `;
+
+                container.appendChild(optBtn);
+            });
+        }
+
+        // Render Matching Type Questions
+        function renderMatchingOptions(q, container, existingAnswer) {
+            const isLocked = existingAnswer !== undefined;
+
+            const gridWrapper = document.createElement('div');
+            gridWrapper.className = "space-y-4";
+
+            q.pairs.forEach((pair, pairIdx) => {
+                const pairRow = document.createElement('div');
+                pairRow.className = "p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3";
+
+                const selectedVal = existingAnswer ? existingAnswer.matchingSelections[pairIdx] : null;
+                const isPairCorrect = existingAnswer && selectedVal === pair.correctMatchIndex;
+
+                pairRow.innerHTML = `
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-200/60 pb-2">
+                        <span class="font-bold text-slate-800 text-xs sm:text-sm">
+                            Item ${pairIdx + 1}: ${pair.itemEn} <span class="text-slate-500 font-normal">(${pair.itemAm})</span>
+                        </span>
+                        ${isLocked ? (isPairCorrect ? '<span class="text-xs text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-check"></i> Correct</span>' : `<span class="text-xs text-rose-600 font-bold flex items-center gap-1"><i class="fa-solid fa-xmark"></i> Correct Pair: ${pair.matchesEn[pair.correctMatchIndex]}</span>`) : ''}
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="matchGroup_${pairIdx}">
+                    </div>
+                `;
+
+                const buttonsGroup = pairRow.querySelector(`#matchGroup_${pairIdx}`);
+
+                pair.matchesEn.forEach((matchText, matchIdx) => {
+                    const matchBtn = document.createElement('button');
+                    matchBtn.type = 'button';
+
+                    let isThisSelected = selectedVal === matchIdx;
+                    let isThisCorrectChoice = pair.correctMatchIndex === matchIdx;
+
+                    let btnClass = "px-3 py-2 rounded-lg text-xs font-semibold border transition-all text-center ";
+
+                    if (!isLocked) {
+                        btnClass += "bg-white border-slate-300 hover:border-blue-500 hover:bg-blue-50 text-slate-700";
+                    } else {
+                        if (isThisCorrectChoice) {
+                            btnClass += "bg-emerald-600 text-white border-emerald-600 shadow-sm";
+                        } else if (isThisSelected && !isThisCorrectChoice) {
+                            btnClass += "bg-rose-600 text-white border-rose-600 line-through";
+                        } else {
+                            btnClass += "bg-slate-100 text-slate-400 border-slate-200 opacity-50";
+                        }
+                    }
+
+                    matchBtn.className = btnClass;
+                    matchBtn.disabled = isLocked;
+                    matchBtn.innerText = matchText;
+
+                    matchBtn.onclick = () => handleSelectMatchingPair(pairIdx, matchIdx);
+
+                    buttonsGroup.appendChild(matchBtn);
+                });
+
+                gridWrapper.appendChild(pairRow);
+            });
+
+            // Confirm Matching Submit Button if not answered
+            if (!isLocked) {
+                const confirmBtn = document.createElement('button');
+                confirmBtn.type = 'button';
+                confirmBtn.className = "w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold uppercase tracking-wider shadow-md shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 mt-2";
+                confirmBtn.innerHTML = '<i class="fa-solid fa-[#check]"></i> Lock Matching Answers / መልሱን አረጋግጥ';
+                confirmBtn.onclick = () => lockMatchingQuestion();
+                gridWrapper.appendChild(confirmBtn);
+            }
+
+            container.appendChild(gridWrapper);
+        }
+
+        // Temporary storage for matching choices before locking
+        let tempMatchingChoices = {};
+
+        function handleSelectMatchingPair(pairIdx, matchIdx) {
+            tempMatchingChoices[pairIdx] = matchIdx;
+            // Visual feedback on selected matching button
+            const group = document.getElementById(`matchGroup_${pairIdx}`);
+            if (group) {
+                const btns = group.querySelectorAll('button');
+                btns.forEach((btn, bIdx) => {
+                    if (bIdx === matchIdx) {
+                        btn.className = "px-3 py-2 rounded-lg text-xs font-semibold border transition-all text-center bg-blue-600 text-white border-blue-600 shadow-sm";
+                    } else {
+                        btn.className = "px-3 py-2 rounded-lg text-xs font-semibold border transition-all text-center bg-white border-slate-300 hover:border-blue-500 hover:bg-blue-50 text-slate-700";
+                    }
+                });
+            }
+        }
+
+        function lockMatchingQuestion() {
+            const q = quizQuestions[currentQuestionIdx];
+            if (Object.keys(tempMatchingChoices).length < q.pairs.length) {
+                alert("Please select a match for all items before submitting your answer.");
+                return;
+            }
+
+            let allCorrect = true;
+            q.pairs.forEach((pair, idx) => {
+                if (tempMatchingChoices[idx] !== pair.correctMatchIndex) {
+                    allCorrect = false;
+                }
+            });
+
+            userAnswers[q.id] = {
+                type: 'matching',
+                matchingSelections: { ...tempMatchingChoices },
+                isCorrect: allCorrect
+            };
+
+            tempMatchingChoices = {};
+            renderQuestion();
+        }
+
+        // Multiple choice selection handler
+        function handleSelectOption(optionIndex) {
+            const q = quizQuestions[currentQuestionIdx];
+            if (userAnswers[q.id] !== undefined) return; // Answer locked
+
+            const isCorrect = optionIndex === q.correctAnswer;
+
+            userAnswers[q.id] = {
+                type: 'mcq',
+                selectedOption: optionIndex,
+                isCorrect: isCorrect
+            };
+
+            renderQuestion();
+        }
+
+        // Show Instant Feedback UI
+        function showFeedbackUI(q, ans) {
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const feedbackIconWrapper = document.getElementById('feedbackIconWrapper');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+
+            feedbackContainer.classList.remove('hidden');
+
+            if (ans.isCorrect) {
+                feedbackContainer.className = "rounded-xl p-4 border border-emerald-200 bg-emerald-50 text-emerald-900 fade-in";
+                feedbackIconWrapper.className = "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-emerald-600 text-white";
+                feedbackIconWrapper.innerHTML = '<i class="fa-solid fa-check text-base"></i>';
+                feedbackTitle.innerText = "Correct Answer! / ትክክለኛ መልስ!";
+                feedbackText.innerText = "Excellent job! Your response is correct and permanently locked.";
+                speakText("Correct answer! Excellent job.");
+            } else {
+                feedbackContainer.className = "rounded-xl p-4 border border-rose-200 bg-rose-50 text-rose-900 fade-in";
+                feedbackIconWrapper.className = "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-rose-600 text-white";
+                feedbackIconWrapper.innerHTML = '<i class="fa-solid fa-xmark text-base"></i>';
+                feedbackTitle.innerText = "Incorrect Answer / ስህተት!";
+                
+                if (q.type === 'mcq' || q.type === 'tf') {
+                    const correctText = q.options[q.correctAnswer];
+                    feedbackText.innerText = `Your selected answer was wrong. The correct answer is highlighted in green: "${correctText}".`;
+                } else {
+                    feedbackText.innerText = "Some matching pairs were incorrect. Review the highlighted correct pairs below.";
+                }
+                speakText("Incorrect answer. Please review the highlighted correct response and explanation.");
+            }
+        }
+
+        // Navigate question index
+        function navigateQuestion(step) {
+            const targetIdx = currentQuestionIdx + step;
+            if (targetIdx >= 0 && targetIdx < quizQuestions.length) {
+                currentQuestionIdx = targetIdx;
+                renderQuestion();
+            }
+        }
+
+        function toggleJumpGrid() {
+            const modal = document.getElementById('jumpGridModal');
+            const container = document.getElementById('jumpGridButtons');
+
+            if (modal.classList.contains('hidden')) {
+                container.innerHTML = '';
+                quizQuestions.forEach((q, idx) => {
+                    const ans = userAnswers[q.id];
+                    let btnColor = "bg-slate-100 text-slate-700 border-slate-200";
+
+                    if (ans) {
+                        btnColor = ans.isCorrect ? "bg-emerald-600 text-white" : "bg-rose-600 text-white";
+                    } else if (idx === currentQuestionIdx) {
+                        btnColor = "bg-blue-600 text-white ring-2 ring-blue-400";
+                    }
+
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `w-8 h-8 rounded-lg text-xs font-bold border flex items-center justify-center transition-all ${btnColor}`;
+                    btn.innerText = idx + 1;
+                    btn.onclick = () => {
+                        currentQuestionIdx = idx;
+                        renderQuestion();
+                        modal.classList.add('hidden');
+                    };
+                    container.appendChild(btn);
+                });
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Narrate Question in British Accent
+        function narrateCurrentQuestion() {
+            const q = quizQuestions[currentQuestionIdx];
+            let textToRead = `Question ${currentQuestionIdx + 1}. ${q.questionEn}. `;
+            
+            if (q.type === 'mcq' || q.type === 'tf') {
+                textToRead += "Options are: " + q.options.join(", ") + ".";
+            }
+            speakText(textToRead);
+        }
+
+        // Narrate Explanation
+        function narrateExplanation() {
+            const q = quizQuestions[currentQuestionIdx];
+            speakText(`Explanation: ${q.explanationEn}`);
+        }
+
+        // Confirm & Submit Quiz
+        function confirmSubmitQuiz() {
+            const answeredCount = Object.keys(userAnswers).length;
+            if (answeredCount < quizQuestions.length) {
+                if (!confirm(`You have answered ${answeredCount} of ${quizQuestions.length} questions. Are you sure you want to finalize and submit now?`)) {
+                    return;
+                }
+            }
+
+            // Calculate Score
+            let correctCount = 0;
+            quizQuestions.forEach(q => {
+                const ans = userAnswers[q.id];
+                if (ans && ans.isCorrect) {
+                    correctCount++;
+                }
+            });
+
+            const total = quizQuestions.length;
+            const scorePercent = Math.round((correctCount / total) * 100);
+            const passed = scorePercent >= 60;
+
+            // Render Results Screen
+            document.getElementById('resStudentName').innerText = studentData.fullName;
+            document.getElementById('resStudentId').innerText = studentData.studentId;
+            document.getElementById('resDate').innerText = studentData.timestamp;
+
+            document.getElementById('metricScore').innerText = `${correctCount} / ${total}`;
+            document.getElementById('metricPercent').innerText = `${scorePercent}%`;
+            document.getElementById('metricCorrect').innerText = correctCount;
+
+            const statusElem = document.getElementById('metricStatus');
+            const iconElem = document.getElementById('scoreResultIcon');
+
+            if (passed) {
+                statusElem.innerText = "PASSED";
+                statusElem.className = "text-xl sm:text-2xl font-extrabold text-emerald-700";
+                iconElem.className = "fa-solid fa-award text-emerald-600";
+            } else {
+                statusElem.innerText = "FAILED";
+                statusElem.className = "text-xl sm:text-2xl font-extrabold text-rose-700";
+                iconElem.className = "fa-solid fa-triangle-exclamation text-rose-600";
+            }
+
+            // Generate Email Mailto Link
+            const teacherEmail = "mesayferedegn2@gmail.com";
+            const emailSubject = encodeURIComponent(`Exam Score Report: ${studentData.fullName} (ID: ${studentData.studentId})`);
+            const emailBody = encodeURIComponent(
+                `EXAM ASSESSMENT REPORT\n` +
+                `------------------------------------\n` +
+                `Student Name: ${studentData.fullName}\n` +
+                `Student ID: ${studentData.studentId}\n` +
+                `Submission Date: ${studentData.timestamp}\n` +
+                `Final Score: ${correctCount} / ${total} (${scorePercent}%)\n` +
+                `Assessment Status: ${passed ? 'PASSED' : 'FAILED'}\n` +
+                `------------------------------------\n` +
+                `Submitted via EduTest Pro Interactive Portal.`
+            );
+
+            document.getElementById('emailScoreBtn').href = `mailto:${teacherEmail}?subject=${emailSubject}&body=${emailBody}`;
+
+            // Save attempt to Local Storage for Teacher Portal
+            saveTeacherRecord({
+                studentName: studentData.fullName,
+                studentId: studentData.studentId,
+                timestamp: studentData.timestamp,
+                score: `${correctCount}/${total}`,
+                percent: `${scorePercent}%`,
+                status: passed ? 'PASSED' : 'FAILED'
+            });
+
+            // Render Detailed Review List
+            renderReviewList();
+
+            // Switch Screen
+            document.getElementById('screenQuiz').classList.add('hidden');
+            document.getElementById('screenResults').classList.remove('hidden');
+
+            speakText(`Assessment completed. Your final score is ${scorePercent} percent.`);
+        }
+
+        function renderReviewList() {
+            const listContainer = document.getElementById('reviewListContainer');
+            listContainer.innerHTML = '';
+
+            quizQuestions.forEach((q, idx) => {
+                const ans = userAnswers[q.id];
+                const isCorrect = ans && ans.isCorrect;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "pt-4 first:pt-0 space-y-2";
+
+                let statusBadge = isCorrect ? 
+                    '<span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Correct / ትክክል</span>' :
+                    '<span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">Incorrect / ስህተት</span>';
+
+                itemDiv.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="space-y-0.5">
+                            <span class="text-xs font-bold text-slate-500">Q${idx + 1}.</span>
+                            <p class="text-sm font-semibold text-slate-900">${q.questionEn}</p>
+                            <p class="text-xs text-slate-600 font-ethiopic">${q.questionAm}</p>
+                        </div>
+                        <div>${statusBadge}</div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-1">
+                        <p><span class="font-bold text-slate-700">Explanation (EN):</span> ${q.explanationEn}</p>
+                        <p class="font-ethiopic text-slate-700"><span class="font-bold">ማብራሪያ (AM):</span> ${q.explanationAm}</p>
+                    </div>
+                `;
+
+                listContainer.appendChild(itemDiv);
+            });
+        }
+
+        // Local Storage Teacher Records Management
+        function saveTeacherRecord(record) {
+            let records = JSON.parse(localStorage.getItem('eduTestTeacherRecords') || '[]');
+            records.unshift(record);
+            localStorage.setItem('eduTestTeacherRecords', JSON.stringify(records));
+        }
+
+        function openTeacherDashboard() {
+            const modal = document.getElementById('teacherModal');
+            const tbody = document.getElementById('teacherTableBody');
+            tbody.innerHTML = '';
+
+            const records = JSON.parse(localStorage.getItem('eduTestTeacherRecords') || '[]');
+
+            if (records.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-slate-400">
+                            <i class="fa-solid fa-folder-open text-2xl mb-2 block"></i>
+                            No student submission records found on this device.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                records.forEach(rec => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-slate-50 border-b border-slate-100";
+                    row.innerHTML = `
+                        <td class="px-4 py-3 font-semibold text-slate-900">${rec.studentName}</td>
+                        <td class="px-4 py-3 font-mono">${rec.studentId}</td>
+                        <td class="px-4 py-3 text-slate-500">${rec.timestamp}</td>
+                        <td class="px-4 py-3 font-bold">${rec.score}</td>
+                        <td class="px-4 py-3 font-bold text-blue-600">${rec.percent}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${rec.status === 'PASSED' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${rec.status}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeTeacherDashboard() {
+            document.getElementById('teacherModal').classList.add('hidden');
+        }
+
+        function clearTeacherRecords() {
+            if (confirm("Are you sure you want to clear all stored student score records?")) {
+                localStorage.removeItem('eduTestTeacherRecords');
+                openTeacherDashboard();
+            }
+        }
+
+        function retakeQuiz() {
+            userAnswers = {};
+            currentQuestionIdx = 0;
+            document.getElementById('screenResults').classList.add('hidden');
+            document.getElementById('screenWelcome').classList.remove('hidden');
+        }
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            initVoiceNarrator();
+        };
+    </script>
+</body>
+</html>
